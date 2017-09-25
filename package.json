@@ -1,0 +1,19 @@
+{
+  "name": "stories-backend",
+  "version": "1.0.0",
+  "description": "A blog made with react and express, this is the backend section",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon ./index.js"
+  },
+  "repository": "https://tludlow99@github.com/tludlow99/stories-backend.git",
+  "author": "Thomas Ludlow <twjludlow@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt-nodejs": "^0.0.3",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "jsonwebtoken": "^7.4.1",
+    "mongoose": "^4.11.4"
+  }
+}
