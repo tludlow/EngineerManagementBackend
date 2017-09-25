@@ -28,7 +28,7 @@ router.post("/signup", async (req, res)=> {
 		} else {
 			const data = {username, email, role: "user", verified: false};
 			const token = jwt.sign({data}, jwtSecret);
-			res.status(200).send({token, username});
+			res.status(200).send({token, username, verified: false});
 		}
 	});
 });
@@ -56,7 +56,7 @@ router.post("/login", async (req, res)=> {
         	if(docs.validPassword(password)) {
 			const data = {username, role: docs.role, verified: docs.verified};
 			const token = jwt.sign({data}, jwtSecret);
-   			res.status(200).send({token, username});
+   			res.status(200).send({token, username, verified: docs.verified});
         	} else {
         		res.status(200).send({ok: false, error: "Your password doesn't match that of the account name you gave us."});
         	}
