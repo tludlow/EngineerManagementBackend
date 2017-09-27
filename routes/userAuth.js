@@ -3,7 +3,6 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const jwtSecret = require("../config/config");
 const User = require("../database/User");
-const Storie = require("../database/Storie");
 
 router.post("/signup", async (req, res)=> {
 	const { username, password, email } = req.body;
@@ -66,46 +65,5 @@ router.post("/login", async (req, res)=> {
     });
 });
 
-router.get("/getRank/:username", async (req, res)=> {
-
-	//IN THE FUTURE THIS COULD BE DONE FROM THE USERS TOKEN AS WE STORE THEIR RANK IN IT.
-	const profileName = req.params.username;
-	User.findOne({username: {'$regex': profileName, $options: 'i'}}, function(err, docs) {
-		if(err) {
-			res.status(200).send({ok: false, error: "There was an error getting that username's information"});
-		} else {
-			res.status(200).send({ok: true, role: docs.role});
-		}
-	});
-});
-
-router.get("/getProfile/:profileName", async (req, res)=> {
-	//Check if the profile actually does exist.
-	const profileName = req.params.profileName;
-	try {
-		var gottenUser = await User.findOne({username: {'$regex': profileName, $options: 'i'}});
-		var gottenPosts = await Storie.find({author: profileName}).limit(6).select("-__v").sort({createdAt: "desc"});
-
-		if(!gottenUser) {
-			res.status(200).send({ok: false, error: "That user doesn't exist."});
-			return;
-		}
-		var returnObject = {username: gottenUser.username, createdAt: gottenUser.createdAt, verified: gottenUser.verified, role: gottenUser.role, posts: gottenPosts};
-		res.status(200).send({ok: true, profile: returnObject});
-	} catch(e) {
-		res.status(200).send({ok: false, error: "We couldn't retrieve the profile data."});
-	}
-	// User.findOne({username: {'$regex': profileName, $options: 'i'}}, function(err, docs) {
-	// 	if(err) {
-	// 		res.status(200).send({ok: false, error: "There was an error getting that username's information."});
-	// 	}
-	// 	if(!docs) {
-	// 		res.status(200).send({ok: false, error: "That user doesn't exist."});
-	// 	}
-		
-	// 	var returnObject = {username: docs.username, createdAt: docs.createdAt, verified: docs.verified, role: docs.role, posts: gottenPosts};
-	// 	res.status(200).send({ok: true, profile: returnObject});
-	// });
-});
 
 module.exports = router;

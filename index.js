@@ -22,7 +22,7 @@ mongoose.set("debug", true);
 
 //File imports
 const userAuth = require("./routes/userAuth");
-const storieRoutes = require("./routes/storieRoutes");
+const jobRoutes = require("./routes/jobRoutes");
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({
@@ -42,7 +42,7 @@ app.disable('view cache');
 
 //Setup rest api
 app.use("/user", userAuth);
-app.use("/storie", storieRoutes);
+app.use("/job", jobRoutes);
 
 
 var server = http.createServer(app);
