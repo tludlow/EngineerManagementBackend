@@ -6,6 +6,7 @@ var Job = new Schema({
   body: String,
   createdBy: String,
   assignedTo: String,
+  dateDue: Date,
   createdAt: {type: Date, default: Date.now },
 });
 
