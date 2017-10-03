@@ -8,8 +8,9 @@ const Job = require("../database/Job");
 
 router.get("/getJobs", async (req, res)=> {
 	//Get the 10 most recent stories.
-	var docs = await Storie.find({}).limit(10).select("-__v").sort({createdAt: "desc"});
+	var docs = await Job.find({}).limit(10).select("-__v").sort({createdAt: "desc"});
 	if(docs.length > 0) {
+		console.log(docs);
 		res.status(200).send({ok: true, docs});
 		return;
 	} else {
