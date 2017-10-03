@@ -8,7 +8,8 @@ const Job = require("../database/Job");
 
 router.get("/getJobs", async (req, res)=> {
 	//Get the 10 most recent stories.
-	var docs = await Job.find({}).limit(10).select("-__v").sort({createdAt: "desc"});
+	var docs = await Job.find({}).select("-__v").sort({dateDue: "asc"});
+	//var docs = await Job.find({}).limit(10).select("-__v").sort({createdAt: "desc"});  UNCOMMENT THIS TO ALLOW FOR LIMITING OF HOW MANY JOBS ARE LOADED
 	if(docs.length > 0) {
 		res.status(200).send({ok: true, jobs: docs});
 		return;
