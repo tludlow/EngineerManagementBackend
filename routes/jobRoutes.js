@@ -45,13 +45,23 @@ router.post("/addJob", async (req, res)=> {
 });
 
 router.get("/getjob/:jobid", async (req, res)=> {
-	var jobid = req.params.jobid;
+	const jobid = req.params.jobid;
 	var jobData = await Job.findOne({_id: new ObjectId(jobid)});
 
 	if(!jobData) {
 		res.status(200).send({ok: false, error: "That job doesnt exist."});
 	} else {
 		res.status(200).send({ok: true, jobData});
+	}
+});
+
+router.get("/deletejob/:jobid", async (req, res)=> {
+	const jobid = req.params.jobid;
+	try {
+		await Job.findOneAndRemove({_id: new ObjectId(jobid)});
+		res.status(200).send({ok: true});
+	} catch(error) {
+		res.status(200).send({ok: false, error: "There was an error deleting that job."});
 	}
 });
 
