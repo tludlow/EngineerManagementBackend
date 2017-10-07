@@ -44,5 +44,16 @@ router.post("/addJob", async (req, res)=> {
 	});
 });
 
+router.get("/getjob/:jobid", async (req, res)=> {
+	var jobid = req.params.jobid;
+	var jobData = await Job.findOne({_id: new ObjectId(jobid)});
+
+	if(!jobData) {
+		res.status(200).send({ok: false, error: "That job doesnt exist."});
+	} else {
+		res.status(200).send({ok: true, jobData});
+	}
+});
+
 
 module.exports = router;
