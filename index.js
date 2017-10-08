@@ -44,7 +44,13 @@ app.disable('view cache');
 app.use("/user", userAuth);
 app.use("/job", jobRoutes);
 
+// 404 Error Handler
+const endpointError = {error: "No Endpoint Found"}
+app.use((req, res) => {
+    res.status(404).end(JSON.stringify(endpointError, null, 2))
+});
+
 
 var server = http.createServer(app);
 server.listen(port);
-console.log(`The express server is running on ${port}`);
+module.exports = app;
