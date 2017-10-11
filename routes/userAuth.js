@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const jwtSecret = require("../config/config");
 const User = require("../database/User");
+const Job = require("../database/Job");
 
 router.post("/signup", async (req, res)=> {
 	const { username, password, email } = req.body;
@@ -62,6 +63,17 @@ router.post("/login", async (req, res)=> {
             res.status(200).send({ok: false, error: "That account doesn't exist."});
         }
     });
+});
+
+router.get("/profile/:profileName", async (req, res)=> {
+	const profileName = req.params.profileName;
+	try {
+		var dataUser = await User.findOne({username: {'$regex': profileName, $options:'i'}}).select("-__v -password -_id");
+		var userJobs = await Job.find({assignedTo: profileName}).limit(10);
+		res.status(200).send({ok: true, profileData: dataUser, userJobs});
+	} catch(err) {
+		res.status(200).send({ok: false, error: "There was an error getting that user's data."});
+	}
 });
 
 
