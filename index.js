@@ -23,6 +23,7 @@ mongoose.set("debug", true);
 //File imports
 const userAuth = require("./routes/userAuth");
 const jobRoutes = require("./routes/jobRoutes");
+const locationRoutes = require("./routes/locationRoutes");
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({
@@ -43,6 +44,7 @@ app.disable('view cache');
 //Setup rest api
 app.use("/user", userAuth);
 app.use("/job", jobRoutes);
+app.use("/location", locationRoutes);
 
 // 404 Error Handler
 const endpointError = {error: "No Endpoint Found"}
