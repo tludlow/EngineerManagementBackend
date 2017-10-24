@@ -6,6 +6,8 @@ var Location = new Schema({
     address: String,
     postcode: String,
     customer: [String],
+    lat: Number,
+    lng: Number,
     createdAt: {type: Date, default: Date.now },
 });
 

@@ -19,13 +19,15 @@ router.get("/getLocations", async (req, res)=> {
 });
 
 router.post("/addLocation", async (req, res)=> {
-    const { title, address, postcode, customer } = req.body;
+    const { title, address, postcode, customer, lat, lng } = req.body;
     try {
         var newLocation = new Location();
         newLocation.title = title;
         newLocation.address = address;
         newLocation.postcode = postcode;
         newLocation.customer = customer;
+        newLocation.lat = lat;
+        newLocation.lng = lng;
         newLocation.save((err)=> {
             if(err) {
                 res.status(200).send({ok: false, error: "There was an error saving your new job."});
