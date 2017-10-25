@@ -70,6 +70,10 @@ router.get("/profile/:profileName", async (req, res)=> {
 	try {
 		var dataUser = await User.findOne({username: {'$regex': profileName, $options:'i'}}).select("-__v -password -_id");
 		var userJobs = await Job.find({assignedTo: profileName}).limit(10);
+		if(!dataUser || !userJobs) {
+			res.status(200).send({ok: false, error: "That user doesnt exist with any jobs or at all.... sigh"});
+			return;
+		}
 		res.status(200).send({ok: true, profileData: dataUser, userJobs});
 	} catch(err) {
 		res.status(200).send({ok: false, error: "There was an error getting that user's data."});
