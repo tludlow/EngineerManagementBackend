@@ -70,5 +70,35 @@ router.get("/deletejob/:jobid", async (req, res)=> {
 	}
 });
 
+function quicksort(list) {
+	//The list only has one item or less in, so it's already sorted!
+	if (list.length <= 1) {
+		return list;
+	}
+	//The point in which to pivot the data around, this honestly can be any piece of data it doesnt need to be the middle.
+	var pivotPoint = list[0];
+
+	//The left and the right lists we will use in a minute.
+	var leftList = []; 
+	var rightList = [];
+
+	//Loop through all the data and sort it into the right list.
+	for (var i = 1; i < list.length; i++) {
+		list[i] < pivotPoint ? leftList.push(list[i]) : rightList.push(list[i]);
+	}
+	//Recursive sort and return of the data.
+	//Basically one just recursive approach with joining it all together at the end.
+	return quicksort(leftList).concat(pivotPoint, quicksort(rightList));
+};
+
+router.get("/jobByAlphabetical", async (req, res)=> {
+	try {
+		var allJobs = await Job.find({});
+	} catch (err) {
+		res.status(200).send({ok: false, error: "There was an error getting all the jobs"});
+	}
+
+});
+
 
 module.exports = router;
