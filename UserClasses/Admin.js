@@ -1,4 +1,4 @@
-class Admin extends User {
+export class Admin extends User {
     
     constructor() {
         super();

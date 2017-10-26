@@ -4,10 +4,10 @@ var Schema = mongoose.Schema;
 var Job = new Schema({
   title: String,
   body: String,
-  createdBy: {type: Schema.Types.ObjectId, ref: 'User'},
-  assignedTo: [{type: Schema.Types.ObjectId, ref: 'User'}],
+  createdBy: String,
+  assignedTo: [String],
   dateDue: Date,
-  location: {type: Schema.Types.ObjectId, ref: 'Location'},
+  location: String,
   createdAt: {type: Date, default: Date.now },
 });
 
