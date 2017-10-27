@@ -4,9 +4,11 @@ const jwt = require("jsonwebtoken");
 const jwtSecret = require("../config/config");
 const User = require("../database/User");
 const ObjectId = require('mongoose').Types.ObjectId;
+const JobDeletions = require("../database/JobDeletions");
 const Job = require("../database/Job");
 const Location = require("../database/Location");
 const moment = require("moment");
+const Comment = require("../database/Comment");
 
 router.get("/getJobsAndLocations/:token", async (req, res)=> {
 	//get the token from the url
@@ -80,12 +82,13 @@ router.get("/getjob/:jobid", async (req, res)=> {
 	try {
 		var jobData = await Job.findOne({_id: new ObjectId(jobid)});
 		var locationInfo = await Location.findOne({title: jobData.location});
+		var commentData = await Comment.find({job: new ObjectId(jobid)}).sort({createdAt: "desc"});
 	
 		//If no data, return bad, if data return good.
 		if(!jobData || !locationInfo) {
 			res.status(200).send({ok: false, error: "That job doesnt exist."});
 		} else {
-			res.status(200).send({ok: true, jobData, lat: locationInfo.lat, lng: locationInfo.lng});
+			res.status(200).send({ok: true, jobData, lat: locationInfo.lat, lng: locationInfo.lng, comments: commentData});
 		}
 	} catch(err) { //Catch the catastrophic error.
 		res.status(200).send({ok: false, error: "There was an errror getting that individual job's data"});
@@ -93,12 +96,23 @@ router.get("/getjob/:jobid", async (req, res)=> {
 });
 
 //Delete a job from the database using the job id.
-router.get("/deletejob/:jobid", async (req, res)=> {
+router.get("/deletejob/:jobid/:token", async (req, res)=> {
 	///Get the job id from the request parameters
 	const jobid = req.params.jobid;
+	const token = req.params.token;
+	let decodedToken = await jwt.verify(token, jwtSecret);
+	let usernameRequesting = decodedToken.data.username;
 	try {
 		//Try and delete, if good return good.
 		await Job.findOneAndRemove({_id: new ObjectId(jobid)});
+		var newJobDeletion = new JobDeletions();
+		newJobDeletion.user = usernameRequesting;
+		newJobDeletion.job = jobid;
+		newJobDeletion.save((err)=> {
+			if(err) {
+				res.status(200).send({ok: false, error: "There was an error deleting that job."});
+			}
+		});
 		res.status(200).send({ok: true});
 	} catch(error) {
 		//There was an error doing the deleting, return the error.
@@ -106,7 +120,25 @@ router.get("/deletejob/:jobid", async (req, res)=> {
 	}
 });
 
-function quicksort(list) {
+router.post("/comment", async (req, res)=> {
+	let { job, user, content } = req.body;
+	try {
+		let newComment = new Comment();
+		newComment.content = content;
+		newComment.user = user;
+		newComment.job = job;
+		newComment.save((err)=> {
+			if(err) {
+				res.status(200).send({ok: false, error: "There was an error saving that comment."});
+			}
+		});
+		res.status(200).send({ok: true, comment: newComment});
+	} catch(err) {
+		res.status(200).send({ok: false, error: "There was an error creating that comment."});
+	}
+});
+
+function quicksort(list, order) {
 	//The list only has one item or less in, so it's already sorted!
 	if (list.length <= 1) {
 		return list;
@@ -118,27 +150,40 @@ function quicksort(list) {
 	var leftList = []; 
 	var rightList = [];
 
-	//Loop through all the data and sort it into the right list.
-	for (var i = 1; i < list.length; i++) {
-		list[i] < pivotPoint ? leftList.push(list[i]) : rightList.push(list[i]);
+	//Orders the list alphabetically
+	if(order === 1) {
+		//Loop through all the data and sort it into the right list.
+		for (var i = 1; i < list.length; i++) {
+			list[i] < pivotPoint ? leftList.push(list[i]) : rightList.push(list[i]);
+		}
+		//Recursive sort and return of the data.
+		//Basically one just recursive approach with joining it all together at the end.
+		return quicksort(leftList).concat(pivotPoint, quicksort(rightList));
+	} else if(order === 2){
+		//Loop through all the data and sort it into the right list.
+		for (var i = 1; i < list.length; i++) {
+			list[i] > pivotPoint ? leftList.push(list[i]) : rightList.push(list[i]);
+		}
+		//Recursive sort and return of the data.
+		//Basically one just recursive approach with joining it all together at the end.
+		return quicksort(leftList).concat(pivotPoint, quicksort(rightList));
 	}
-	//Recursive sort and return of the data.
-	//Basically one just recursive approach with joining it all together at the end.
-	return quicksort(leftList).concat(pivotPoint, quicksort(rightList));
+	return list;
+	
 };
 
 //Actually perform the merge sort on the array.
 //Uses the function below to actually merge the two lists.
-function mergeSort(arr) {
+function mergeSort(list) {
 	//If there is no data or just one piece return the original list as it's already sorted!
-    if (arr.length < 2)
+    if (list.length < 2)
         return arr;
 	
 	//Find the middle element, in integer form.
 	//Find the left array of original list depending on the middle piece, same for the right.
-    var middle = parseInt(arr.length / 2);
-    var left   = arr.slice(0, middle);
-    var right  = arr.slice(middle, arr.length);
+    var middle = parseInt(list.length / 2);
+    var left   = list.slice(0, middle);
+    var right  = list.slice(middle, list.length);
 	//Recursively return the data.
     return merge(mergeSort(left), mergeSort(right));
 }
