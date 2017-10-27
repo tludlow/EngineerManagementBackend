@@ -6,19 +6,36 @@ const User = require("../database/User");
 const ObjectId = require('mongoose').Types.ObjectId;
 const Job = require("../database/Job");
 const Location = require("../database/Location");
+const moment = require("moment");
 
-router.get("/getJobsAndLocations", async (req, res)=> {
-	//Get the 10 most recent stories.
+router.get("/getJobsAndLocations/:token", async (req, res)=> {
+	//get the token from the url
+	const auth = req.params.token;
+	//Verify the token is good
+	let decodedToken = await jwt.verify(auth, jwtSecret);
+	//get the person making the request so we can use this to get their notification data.
+	let usernameRequesting = decodedToken.data.username;
+
+	let today = moment().startOf('day')
+	let fourDays = moment(today).add(4, 'days')
 	try {
+		//find all jobs
 		var foundJobs = await Job.find({}).select("-__v").sort({dateDue: "asc"});
+		//find all locations
 		var foundLocations = await Location.find({});
+		//find all jobs assigned to the user and within the next 4 days and get the integer value of how many there are.
+		var notificationContent = await Job.find({assignedTo: usernameRequesting, dateDue: {
+			$gte: today.toDate(),
+			$lt: fourDays.toDate()
+		  }}).count();
+		
 		//var docs = await Job.find({}).limit(10).select("-__v").sort({createdAt: "desc"});  UNCOMMENT THIS TO ALLOW FOR LIMITING OF HOW MANY JOBS ARE LOADED
 	} catch(err) {
-		res.status(200).send({ok: false, error: "There was an error requesting the data."});
+		res.status(200).send({ok: false, error: "There was an error requesting the data you wanted."});
 		return;
 	}
 	
-	res.status(200).send({ok: true, jobs: foundJobs, locations: foundLocations});
+	res.status(200).send({ok: true, jobs: foundJobs, locations: foundLocations, notifications: notificationContent});
 });
 
 //Add a job using the request body data.
