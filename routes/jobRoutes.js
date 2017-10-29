@@ -22,7 +22,7 @@ router.get("/getJobsAndLocations/:token", async (req, res)=> {
 	let fourDays = moment(today).add(4, 'days')
 	try {
 		//find all jobs
-		var foundJobs = await Job.find({}).select("-__v").sort({dateDue: "asc"});
+		var foundJobs = await Job.find({deleted: false}).select("-__v").sort({dateDue: "asc"});
 		//find all locations
 		var foundLocations = await Location.find({});
 		//find all jobs assigned to the user and within the next 4 days and get the integer value of how many there are.
@@ -103,8 +103,8 @@ router.get("/deletejob/:jobid/:token", async (req, res)=> {
 	let decodedToken = await jwt.verify(token, jwtSecret);
 	let usernameRequesting = decodedToken.data.username;
 	try {
-		//Try and delete, if good return good.
-		await Job.findOneAndRemove({_id: new ObjectId(jobid)});
+		//Try and update the job to be set to deleted, if good return good.
+		await Job.findOneAndUpdate({_id: new ObjectId(jobid)}, { $set: { deleted: true }});
 		var newJobDeletion = new JobDeletions();
 		newJobDeletion.user = usernameRequesting;
 		newJobDeletion.job = jobid;
@@ -212,6 +212,9 @@ function merge(left, right) {
 router.get("/jobByAlphabetical", async (req, res)=> {
 	try {
 		var allJobs = await Job.find({});
+		//Can be either quicksort or merge sort depending on what you want.
+		let quicksortedJobs = quicksort(allJobs, 1);
+		res.status(200).send({ok: true, jobs: quicksortedJobs});
 	} catch (err) {
 		res.status(200).send({ok: false, error: "There was an error getting all the jobs"});
 	}

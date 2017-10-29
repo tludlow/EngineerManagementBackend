@@ -69,7 +69,7 @@ router.get("/profile/:profileName", async (req, res)=> {
 	const profileName = req.params.profileName;
 	try {
 		var dataUser = await User.findOne({username: {'$regex': profileName, $options:'i'}}).select("-__v -password -_id");
-		var userJobs = await Job.find({assignedTo: profileName}).limit(10);
+		var userJobs = await Job.find({assignedTo: profileName, deleted: false}).limit(10);
 		if(!dataUser || !userJobs) {
 			res.status(200).send({ok: false, error: "That user doesnt exist with any jobs or at all.... sigh"});
 			return;

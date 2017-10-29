@@ -8,6 +8,7 @@ var Job = new Schema({
   assignedTo: [String],
   dateDue: Date,
   location: String,
+  deleted: {type: Boolean, default: false},
   createdAt: {type: Date, default: Date.now },
 });
 
