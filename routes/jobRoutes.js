@@ -159,6 +159,7 @@ function quicksort(list, order) {
 		//Recursive sort and return of the data.
 		//Basically one just recursive approach with joining it all together at the end.
 		return quicksort(leftList).concat(pivotPoint, quicksort(rightList));
+
 	} else if(order === 2){
 		//Loop through all the data and sort it into the right list.
 		for (var i = 1; i < list.length; i++) {
@@ -209,13 +210,12 @@ function merge(left, right) {
     return result;
 }
 
-router.get("/jobByAlphabetical", async (req, res)=> {
+router.get("/jobByAlphabetical", async (req, res )=> {
 	try {
 		var allJobs = await Job.find({});
 	} catch (err) {
 		res.status(200).send({ok: false, error: "There was an error getting all the jobs"});
 	}
-
 });
 
 
