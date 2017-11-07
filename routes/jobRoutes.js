@@ -178,7 +178,7 @@ function quicksort(list, order) {
 function mergeSort(list) {
 	//If there is no data or just one piece return the original list as it's already sorted!
     if (list.length < 2)
-        return arr;
+        return list;
 	
 	//Find the middle element, in integer form.
 	//Find the left array of original list depending on the middle piece, same for the right.
