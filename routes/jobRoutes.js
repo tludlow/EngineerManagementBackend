@@ -22,7 +22,7 @@ router.get("/getJobsAndLocations/:token", async (req, res)=> {
 	let fourDays = moment(today).add(4, 'days')
 	try {
 		//find all jobs
-		var foundJobs = await Job.find({deleted: false}).select("-__v").sort({dateDue: "asc"});
+		var foundJobs = await Job.find({deleted: false}).select("-__v").sort({dateDue: "asc", title: "asc"});
 		//find all locations
 		var foundLocations = await Location.find({});
 		//find all jobs assigned to the user and within the next 4 days and get the integer value of how many there are.
