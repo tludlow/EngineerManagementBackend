@@ -9,11 +9,11 @@ var axios = require("axios");
 describe("Job Testing", function() {
     it("Should return an error as no jwt token taken", function(done) {
         axios.get("http://localhost:7770/job/getJobsAndLocations/meow").then((res)=> {
-            res.should.have.status(200);
-            expect(res.data).to.have.a("error");
+            res.should.have.status(404);
             done();
         }).catch((err)=> {
-            console.log(err);
+            res.should.have.status(404);
+            done();
         });
     });
 });
