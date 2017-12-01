@@ -12,15 +12,16 @@ const Comment = require("../database/Comment");
 
 router.get("/getJobsAndLocations/:token", async (req, res)=> {
 	//get the token from the url
-	const auth = req.params.token;
-	//Verify the token is good
-	let decodedToken = await jwt.verify(auth, jwtSecret);
-	//get the person making the request so we can use this to get their notification data.
-	let usernameRequesting = decodedToken.data.username;
-
-	let today = moment().startOf('day')
-	let fourDays = moment(today).add(4, 'days')
 	try {
+		const auth = req.params.token;
+		//Verify the token is good
+		let decodedToken = await jwt.verify(auth, jwtSecret);
+		//get the person making the request so we can use this to get their notification data.
+		let usernameRequesting = decodedToken.data.username;
+
+		let today = moment().startOf('day')
+		let fourDays = moment(today).add(4, 'days')
+	
 		//find all jobs
 		var foundJobs = await Job.find({deleted: false}).select("-__v").sort({dateDue: "asc", title: "asc"});
 		//find all locations
