@@ -14,10 +14,10 @@ var otherMethod = MyMethods.otherMethod;          HOW TO USE MULTIPLE EXPORTS IN
 **/
 //App imports
 const app = express();
-const port = 7770;
+const PORT = 7770;
 
-var db = "engineermanagement";
-mongoose.connect("mongodb://127.0.0.1/" + db); //must use 127.0.0.1 vs localhost to connect without an internet connection.
+var DATABASE = "engineermanagement";
+mongoose.connect("mongodb://127.0.0.1/" + DATABASE); //must use 127.0.0.1 vs localhost to connect without an internet connection.
 mongoose.set("debug", true);
 
 //File imports
@@ -54,5 +54,5 @@ app.use((req, res) => {
 
 
 var server = http.createServer(app);
-server.listen(port);
+server.listen(PORT);
 module.exports = app;
